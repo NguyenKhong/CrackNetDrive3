@@ -1,0 +1,1 @@
+pyinstaller --onefile DownloadEdumall.spec
