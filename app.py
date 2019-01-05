@@ -13,6 +13,7 @@ import threading
 import time
 import io
 import shutil
+import mmap
 
 app = Flask(__name__)
 
@@ -147,14 +148,18 @@ def crackNetDrive():
 
         key = OpenKey(HKEY_LOCAL_MACHINE, r'SOFTWARE\Bdrive Inc\NetDrive3')
         DirNetDrive = QueryValue(key, 'Path')
-        shutil.copy2(os.path.join(DirNetDrive, 'NetDrive.exe'), os.path.join(DirNetDrive, 'NetDrive.exe.bak'))
-        shutil.copy2(os.path.join(DirNetDrive, 'ndagent.exe'), os.path.join(DirNetDrive, 'ndagent.exe.bak'))
-        with open(os.path.join(DirNetDrive, 'NetDrive.exe'), 'rb+') as f:
-            f.seek(0x1AF51C)
+        NetDrivePath = os.path.join(DirNetDrive, 'NetDrive.exe')
+        ndagentPath = os.path.join(DirNetDrive, 'ndagent.exe')
+        shutil.copy2(NetDrivePath, os.path.join(DirNetDrive, 'NetDrive.exe.bak'))
+        shutil.copy2(ndagentPath, os.path.join(DirNetDrive, 'ndagent.exe.bak'))
+        with open(NetDrivePath, 'rb+') as f:
+            #f.seek(0x1AF51C)
+            f.seek(FindOffsetBypass(NetDrivePath))
             f.write('://127.0.0.1:52221')
 
-        with open(os.path.join(DirNetDrive, 'ndagent.exe'), 'rb+') as f:
-            f.seek(0x103A70)
+        with open(ndagentPath, 'rb+') as f:
+            #f.seek(0x103A70)
+            f.seek(FindOffsetBypass(ndagentPath))
             f.write('://127.0.0.1:52221')
         
         pathFileHosts = os.path.join(os.environ['windir'], r'System32\drivers\etc\hosts')
@@ -200,8 +205,6 @@ def runServer():
     thread.start()
     app.run(threaded = True, debug = False, port = 52221, host = '127.0.0.1')#, ssl_context=(PATH_CERT, PATH_KEY))
 
-    
-
 def RunAtStartup():
     try:
         key = OpenKey(HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Run', 0, KEY_WRITE)
@@ -210,6 +213,11 @@ def RunAtStartup():
         return True
     except WindowsError:
         return False
+
+def FindOffsetBypass(FileName):
+    with open(FileName, 'rb+') as f:
+        mm = mmap.mmap(f.fileno(), 0)
+        return int(mm.find('api.bdrive.com')) - 4
 
 
 def RemoveRunAtStartup():
