@@ -1,8 +1,10 @@
-# CRACK NETDRIVE3
+# CRACK NETDRIVE3 
+# NO MAINTENANCE
+***YOU SHOULD USE [RCLONE](https://rclone.org/) INSTEAD OF NETDRIVE***
 
 Auto crack netdrive3 or create fake server for netdrive3 [netdrive.net](http://www.netdrive.net/)
 
-***YOU SHOULD USE [RCLONE](https://rclone.org/) INSTEAD OF NETDRIVE***
+
 
 ***Note: Please buy app if you can.***
 # User manual:
